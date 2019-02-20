@@ -1,7 +1,7 @@
 function getPathToBibFile(file)
     -- Return complete path to LaTeX file
     local handle = io.popen('kpsewhich ' .. file)
-    local bibEntry = handle:read("l")
+    local bibEntry = handle:read("*l")
     handle:close()
     return bibEntry
 end
