@@ -12,9 +12,12 @@ function fixYAMLHeader(meta)
         if meta.csl then  -- Use the one that's provided if it is
             meta.csl[1].c = string.gsub(meta.csl[1].c, "~", os.getenv('HOME'))
         elseif not meta.csl then  -- otherwise choose inline or notes style.
-            local intextCSL = os.getenv('HOME') .. '/.pandoc/chicago-manual-of-style-16th-edition-full-in-text.csl'
-            local notesCSL = os.getenv('HOME') .. '/.pandoc/chicago-fullnote-bibliography.csl'
-            if meta.bibinline then
+            local intextCSL = os.getenv('HOME') .. '/.pandoc/csl/chicago-manual-of-style-16th-edition-full-in-text.csl'
+            local notesCSL = os.getenv('HOME') .. '/.pandoc/csl/chicago-fullnote-bibliography.csl'
+            local authordateCSL = os.getenv('HOME') .. '/.pandoc/csl/chicago-author-date.csl'
+            if meta.biblatexoptions and meta.biblatexoptions[1].c == 'authordate' then
+                meta.csl = pandoc.MetaInlines(pandoc.Str(authordateCSL))
+            elseif meta.bibinline then
                 meta.csl = pandoc.MetaInlines(pandoc.Str(intextCSL))
             else
                 meta.csl = pandoc.MetaInlines(pandoc.Str(notesCSL))
