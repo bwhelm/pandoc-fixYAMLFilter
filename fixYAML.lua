@@ -3,12 +3,15 @@ function getPathToBibFile(file)
     local handle = io.popen('kpsewhich ' .. file)
     local bibEntry = handle:read("*l")
     handle:close()
+    if bibEntry == nil then
+        print("WARNING: Cannot find bibiliographical file, " .. file .. ".")
+    end
     return bibEntry
 end
 
 
 function fixYAMLHeader(meta)
-    if FORMAT ~= 'latex' then  -- Need to cope with csl style....
+    if FORMAT ~= 'latex' or FORMAT ~= 'beamer' then  -- Need to cope with csl style....
         if meta.csl then  -- Use the one that's provided if it is
             meta.csl[1].c = string.gsub(meta.csl[1].c, "~", os.getenv('HOME'))
         elseif not meta.csl then  -- otherwise choose inline or notes style.
@@ -38,11 +41,11 @@ function fixYAMLHeader(meta)
         end
     end
     if meta.bibliography then  -- Get complete path to bibliography files
-        if meta.bibliography.t == "MetaList" then
+        if meta.bibliography.t == 'MetaList' then
             for key, value in pairs(meta.bibliography) do
                 meta.bibliography[key][1].c = getPathToBibFile(value[1].c)
             end
-        elseif meta.bibliography.t == "MetaInlines" then
+        elseif meta.bibliography.t == 'MetaInlines' then
             meta.bibliography[1].c = getPathToBibFile(meta.bibliography[1].c)
         end
     end
